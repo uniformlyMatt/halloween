@@ -10,8 +10,8 @@ from time import sleep
 
 button_pin = 21
 
-motor_in1 = 24
-motor_in2 = 23
+motor_in1 = 23
+motor_in2 = 24
 en = 25
 temp1 = 1
 
@@ -26,8 +26,8 @@ GPIO.output(motor_in2, GPIO.LOW)
 
 candy = GPIO.input(button_pin)
 
-p = GPIO.PWM(en,1000)
-p.start(25)
+p = GPIO.PWM(en, 1000)
+p.start(50)
 print("\n")
 print("The default speed & direction of motor is LOW & Forward.....")
 print("r-run s-stop f-forward b-backward l-low m-medium h-high e-exit")
@@ -35,7 +35,7 @@ print("\n")
 
 while(True):
 
-    x = raw_input()
+    x = input()
     
     if x=='r':
         print("run")
