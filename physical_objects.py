@@ -1,21 +1,24 @@
 import time
+import threading
+import RPi.GPIO as gpio
 
 class Elevator:
     def __init__(self, motor1 = 23, motor2 = 24, enable = 25, speed = 50):
         self.motor1 = motor1
         self.motor2 = motor2
         self.enable = enable
+        self.speed = speed
         self.ready = threading.Event()
         self.pins = [motor1, motor2, enable]
         
-        # Set the speed of the pulse (using Pulse Width Modulation)
-        self.pulse = gpio.PWM(self.enable, 1000)
-        self.pulse.start(self.speed)
-                
         # Put the elevator pins in output mode
         gpio.setup(self.motor1, gpio.OUT)
         gpio.setup(self.motor2, gpio.OUT)
         gpio.setup(self.enable, gpio.OUT)
+        
+        # Set the speed of the pulse (using Pulse Width Modulation)
+        self.pulse = gpio.PWM(self.enable, 1000)
+        self.pulse.start(self.speed)       
         
         # Start with both motors OFF
         gpio.output(self.enable, 0)
@@ -36,8 +39,8 @@ class Elevator:
         # Wait 1 second before coming back down
         time.sleep(1)
         
-        gpio.output(motor_in1, 0)
-        gpio.output(motor_in2, 1)
+        gpio.output(self.motor1, 0)
+        gpio.output(self.motor2, 1)
         print("coming back down")
         
         time.sleep(1)
@@ -76,7 +79,7 @@ class Button:
         return None
         
 class Dispenser:
-    def __init__(self, pulse = 17, direction = 27, enable = 22, steps = 3600, step_delay = 0.0000001):
+    def __init__(self, pulse = 17, direction = 27, enable = 22, steps = 7200, step_delay = 0.0000001):
         self.pulse = pulse
         self.direction = direction
         self.enable = enable
@@ -106,15 +109,15 @@ class Dispenser:
         print('Rotating auger...')
 
         for i in range(self.steps):
-            gpio.output(ena, gpio.HIGH)
+            gpio.output(self.enable, 1)
             #print('Controller enabled')
 
-            gpio.output(pul, gpio.HIGH)
-            sleep(step_delay)
-            gpio.output(pul, gpio.LOW)
-            sleep(step_delay)
+            gpio.output(self.pulse, 1)
+            time.sleep(self.step_delay)
+            gpio.output(self.pulse, 0)
+            time.sleep(self.step_delay)
 
-            gpio.output(ena, gpio.LOW)
+            gpio.output(self.enable, 0)
 #         time.sleep(3)        
         
         self.ready.set()
