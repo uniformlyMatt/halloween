@@ -29,7 +29,7 @@ class Elevator:
     
     def up(self):
         """ Make the elevator go up a certain length. """
-        gpio.output(self.direction, 1)
+        gpio.output(self.direction, 0)
         
         for i in range(self.timing_belt):
             gpio.output(self.enable, 1)
@@ -48,7 +48,7 @@ class Elevator:
     def down(self):
         """ Make the elevator come down a certain length. """
         
-        gpio.output(self.direction, 0)
+        gpio.output(self.direction, 1)
         
         for i in range(self.timing_belt):
             gpio.output(self.enable, 1)
@@ -71,7 +71,7 @@ class Elevator:
         # Wait 2 seconds at the top
         time.sleep(2)
         
-        self.down()
+        #self.down()
         
         self.ready.set()
         
