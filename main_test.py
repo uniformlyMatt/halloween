@@ -13,34 +13,12 @@ ultrasonic = ph.Ultrasonic(trigger = 18, echo = 10, pulse_delay = 0.00001)
 
 dist = 100
 
-ph.thread_it(elevator)
-
-"""
-# Allow the ultrasonic sensor some warm-up time
-for i in range(10):
-    dist = ultrasonic.distance()
-    time.sleep(0.05)
-"""
-"""
 try:
-    print('Measuring distance...')
     while True:
-        #dist = ultrasonic.distance()
-        #time.sleep(0.05)
-        
-        #print('Measured distance at {} cm'.format(dist))
-        '''
-        if 1 < dist <= 5:
-            print('\nDistance measurements stopped at {} cm'.format(dist))
-            ph.thread_it(elevator)
-            ph.thread_it(button)
-            ph.thread_it(dispenser)
-            
-            print('All done, back to measuring distance...')
-            dist = 100
-        '''
+##        ph.thread_it(button)
+        ph.thread_it(dispenser)
+        time.sleep(0.2)
 
 except KeyboardInterrupt:
     gpio.cleanup()
     print('Done')
-"""
