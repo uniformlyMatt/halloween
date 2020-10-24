@@ -2,13 +2,14 @@ import time
 import threading
 import RPi.GPIO as gpio
 
-class Elevator:
-    def __init__(self, pulse = 23, direction = 24, enable = 25, timing_belt = 72, step_delay = 0.0000001):
+class Stepper:
+    def __init__(self, pulse = 23, direction = 24, enable = 25, steps = 80, step_delay = 0.0000001, name = 'Elevator'):
         self.pulse = pulse
         self.direction = direction
         self.enable = enable
-        self.timing_belt = timing_belt             # Number of steps needed to rotate the auger
+        self.steps = steps             # Number of steps needed to rotate the auger
         self.step_delay = step_delay   # Extremely short delay between steps
+        self.name = name
         self.pins = [pulse, direction, enable]
         
         self.ready = threading.Event()
@@ -19,63 +20,44 @@ class Elevator:
         gpio.setup(self.enable, gpio.OUT)
         
         # Set the direction to FORWARD
-        gpio.output(self.direction, 1)
+        gpio.output(self.direction, 0)
+        self.fwd = True
+        print('{} direction set to FWD'.format(self.name))
         
         # Start with the stepper motor OFF
         gpio.output(self.enable, 0)
         
     def __str__(self):
-        return 'Elevator object on pins {}'.format(self.pins)
+        return 'Stepper object {} on pins {}'.format(self.name, self.pins)
     
-    def up(self):
-        """ Make the elevator go up a certain length. """
-        gpio.output(self.direction, 0)
+    def change_direction(self):
+        """ Switch direction. """
         
-        for i in range(self.timing_belt):
-            gpio.output(self.enable, 1)
-            #print('Controller enabled')
-
-            gpio.output(self.pulse, 1)
-            time.sleep(self.step_delay)
-            gpio.output(self.pulse, 0)
-            time.sleep(self.step_delay)
-
-            gpio.output(self.enable, 0)
-#         time.sleep(3)        
-        
-        return None
-    
-    def down(self):
-        """ Make the elevator come down a certain length. """
-        
-        gpio.output(self.direction, 1)
-        
-        for i in range(self.timing_belt):
-            gpio.output(self.enable, 1)
-            #print('Controller enabled')
-
-            gpio.output(self.pulse, 1)
-            time.sleep(self.step_delay)
-            gpio.output(self.pulse, 0)
-            time.sleep(self.step_delay)
-
-            gpio.output(self.enable, 0)
-#         time.sleep(3)        
-        
+        if self.fwd:
+            self.fwd = False
+            print('{} direction set to BWD'.format(self.name))
+        else:
+            self.fwd = True
+            print('{} direction set to FWD'.format(self.name))
+            
         return None
         
     def run(self):
         """ Make the elevator go up a certain length, then come back down. """
-        self.up()
         
-        # Wait 2 seconds at the top
-        time.sleep(2)
-        
-        #self.down()
+        for step in range(self.steps):
+            gpio.output(self.enable, 1)
+
+            gpio.output(self.pulse, 1)
+            time.sleep(self.step_delay)
+            gpio.output(self.pulse, 0)
+            time.sleep(self.step_delay)
+
+            gpio.output(self.enable, 0)     
         
         self.ready.set()
         
-        return 0
+        return None
     
 class Button:
     def __init__(self, pin = 14):
@@ -91,60 +73,12 @@ class Button:
     def run(self):
         """ Wait for the button to be pressed. """
         
-#         time.sleep(3)
         while True:
             if gpio.input(self.pin) == gpio.HIGH:
                 self.ready.set()
                 break
-#         self.ready.set()
+
         print('\nButton pressed')
-        return None
-        
-class Dispenser:
-    def __init__(self, pulse = 17, direction = 27, enable = 22, steps = 7200, step_delay = 0.0000001):
-        self.pulse = pulse
-        self.direction = direction
-        self.enable = enable
-        self.steps = steps             # Number of steps needed to rotate the auger
-        self.step_delay = step_delay   # Extremely short delay between steps
-        self.pins = [pulse, direction, enable]
-        
-        self.ready = threading.Event()
-        
-        # Physical pin setup
-        gpio.setup(self.pulse, gpio.OUT)
-        gpio.setup(self.direction, gpio.OUT)
-        gpio.setup(self.enable, gpio.OUT)
-        
-        # Set the direction to FORWARD
-        gpio.output(self.direction, 1)
-        
-        # Start with the stepper motor OFF
-        gpio.output(self.enable, 0)
-        
-    def __str__(self):
-        return 'Dispenser object on pins {}'.format(self.pins)
-    
-    def run(self):
-        """ Dispense candy """
-        
-        print('Rotating auger...')
-
-        for i in range(self.steps):
-            gpio.output(self.enable, 1)
-            #print('Controller enabled')
-
-            gpio.output(self.pulse, 1)
-            time.sleep(self.step_delay)
-            gpio.output(self.pulse, 0)
-            time.sleep(self.step_delay)
-
-            gpio.output(self.enable, 0)
-#         time.sleep(3)        
-        
-        self.ready.set()
-        print('Candy dispensed')
-        
         return None
     
 class Ultrasonic:
@@ -199,3 +133,5 @@ def thread_it(obj, timeout = 10):
     # Clean up
     thread.join()
     obj.ready.clear()
+    
+    return None

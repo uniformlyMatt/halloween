@@ -5,13 +5,20 @@ import physical_objects as ph
 gpio.setwarnings(False)
 gpio.setmode(gpio.BCM)
 
-# Initialize the elevator 
-elevator = ph.Elevator(motor1 = 23, motor2 = 24, enable = 25, speed = 65)
-    
-try:
-    while True:    
-        ph.thread_it(elevator)
+elevator = ph.Stepper(pulse = 13, direction = 19, enable = 26, steps = 57600, name = 'Elevator')
 
-except KeyboardInterrupt:
-    gpio.cleanup()
-    print('Done')
+print(elevator)
+
+# Run the test
+
+# Send the elevator up
+ph.thread_it(elevator)
+
+# Change the elevator direction and send it back down
+elevator.change_direction()
+time.sleep(0.5)
+ph.thread_it(elevator)
+
+# Get the elevator ready for the next trip
+elevator.change_direction()
+print('Done')
