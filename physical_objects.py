@@ -20,9 +20,9 @@ class Stepper:
         gpio.setup(self.enable, gpio.OUT)
         
         # Set the direction to FORWARD
-        gpio.output(self.direction, 0)
-        self.fwd = True
-        print('{} direction set to FWD'.format(self.name))
+        gpio.output(self.direction, 1)
+        self.bwd = True
+##        print('{} direction set to FWD'.format(self.name))
         
         # Start with the stepper motor OFF
         gpio.output(self.enable, 0)
@@ -30,31 +30,33 @@ class Stepper:
     def __str__(self):
         return 'Stepper object {} on pins {}'.format(self.name, self.pins)
     
-    def change_direction(self):
+    def reverse(self):
         """ Switch direction. """
         
-        if self.fwd:
-            self.fwd = False
-            print('{} direction set to BWD'.format(self.name))
-        else:
-            self.fwd = True
-            print('{} direction set to FWD'.format(self.name))
+        if self.bwd:
+            self.bwd = False
+            print('Direction set to FWD')
+        elif not self.bwd:
+            self.bwd = True
+            print('Direction set to BWD')
             
         return None
         
     def run(self):
-        """ Make the elevator go up a certain length, then come back down. """
+        """ Make the Stepper run for a set number of steps """
+        if self.bwd:
+            gpio.output(self.direction, 1)
+        else:
+            gpio.output(self.direction, 0)
         
+        gpio.output(self.enable, 1)
         for step in range(self.steps):
-            gpio.output(self.enable, 1)
-
             gpio.output(self.pulse, 1)
             time.sleep(self.step_delay)
             gpio.output(self.pulse, 0)
             time.sleep(self.step_delay)
 
-            gpio.output(self.enable, 0)     
-        
+        gpio.output(self.enable, 0)
         self.ready.set()
         
         return None
