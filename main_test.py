@@ -6,7 +6,7 @@ gpio.setwarnings(False)
 gpio.setmode(gpio.BCM)
 
 # Initialize the physical objects in the system 
-elevator = ph.Stepper(pulse = 13, direction = 19, enable = 26, steps = 640000, name = 'Elevator')
+elevator = ph.Stepper(pulse = 13, direction = 19, enable = 26, steps = 54000, name = 'Elevator')
 button = ph.Button(pin = 14)
 dispenser = ph.Stepper(pulse = 17, direction = 27, enable = 22, steps = 800, name = 'Dispenser')
 ultrasonic = ph.Ultrasonic(trigger = 18, echo = 10, pulse_delay = 0.00001)
@@ -28,15 +28,15 @@ try:
         # When the bag is in the sensor area, move the components
         if 1 < dist < 5:
             # Send the elevator up
-            ph.thread_it(elevator)
             
-            # Change the elevator direction and send it back down
-            elevator.change_direction()
-            time.sleep(0.5)
+            elevator.reverse()
             ph.thread_it(elevator)
             
             # Get the elevator ready for the next trip
-            elevator.change_direction()
+	    time.sleep(2)
+
+            elevator.reverse()
+            ph.thread_it(elevator)
             
             # Wait for the button to be pressed
             ph.thread_it(button)
@@ -44,6 +44,9 @@ try:
             # Dispense candy once the button has been pressed
             ph.thread_it(dispenser)
             print('Candy dispensed')
+            
+            # Wait 5 seconds until the system can be triggered again
+            time.sleep(5)
             
         time.sleep(0.2)
 
