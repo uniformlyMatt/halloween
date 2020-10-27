@@ -9,7 +9,7 @@ gpio.setmode(gpio.BCM)
 elevator = ph.Stepper(pulse = 13, direction = 19, enable = 26, steps = 54000, name = 'Elevator')
 button = ph.Button(pin = 14)
 dispenser = ph.Stepper(pulse = 17, direction = 27, enable = 22, steps = 800, name = 'Dispenser')
-ultrasonic = ph.Ultrasonic(trigger = 18, echo = 10, pulse_delay = 0.00001)
+ultrasonic = ph.Ultrasonic(trigger = 18, echo = 21, pulse_delay = 0.00001)
 
 # Show that each physical object is initialized
 for obj in [elevator, button, dispenser, ultrasonic]:
@@ -33,7 +33,7 @@ try:
             ph.thread_it(elevator)
             
             # Get the elevator ready for the next trip
-	    time.sleep(2)
+            time.sleep(2)
 
             elevator.reverse()
             ph.thread_it(elevator)
