@@ -7,7 +7,8 @@ class Stepper:
         self.pulse = pulse
         self.direction = direction
         self.enable = enable
-        self.steps = steps             # Number of steps needed to rotate the auger
+        self.steps = steps             # Number of steps to move the Stepper
+        self.set_steps = steps         # Permanent number of steps
         self.step_delay = step_delay   # Extremely short delay between steps
         self.name = name
         self.pins = [pulse, direction, enable]
@@ -30,6 +31,20 @@ class Stepper:
     def __str__(self):
         return 'Stepper object {} on pins {}'.format(self.name, self.pins)
     
+    def reset_elevator(self):
+        """ Function to put the Elevator in its ready position """
+        
+        if self.name == 'Elevator':
+            self.bwd = True
+            self.steps = 8000
+            
+            self.run()
+            
+            self.steps = self.set_steps
+                
+        else:
+            return None
+    
     def reverse(self):
         """ Switch direction. """
         
@@ -44,6 +59,7 @@ class Stepper:
         
     def run(self):
         """ Make the Stepper run for a set number of steps """
+        
         if self.bwd:
             gpio.output(self.direction, 1)
         else:
@@ -122,6 +138,47 @@ class Ultrasonic:
         # multiply by the speed of sound (34300 cm/s)
         # and divide by 2 (there and back)
         return elapsed_time*34300/2
+    
+class LED:
+    def __init__(self, pin = 5, blinks = 10):
+        self.pin = pin
+        
+        # Physical pin setup
+        gpio.setup(self.pin, gpio.OUT)
+        gpio.output(self.pin, 0)
+        
+    def __str__(self):
+        return "LED object on pin {}".format(self.pin)
+        
+    def on(self):
+        """ Simply turn the LED on """
+        
+        gpio.output(self.pin, 1)
+        
+        return None
+    
+    def off(self):
+        """ Simply turn the LED off """
+        
+        gpio.output(self.pin, 0)
+        
+    def blink(self):
+        """ Make the LED blink a set amount of blinks """
+        
+        for i in range(self.blinks):
+            # Turn the LED on
+            self.on()
+            
+            time.sleep(0.05)
+            
+            # Turn the LED off
+            self.off()
+        
+        return None
+    
+    def run(self):
+        """ Blink the LED. I had to do it this way to use threading. """
+        pass
     
 def thread_it(obj, timeout = 10):
     """ General function to handle threading for the physical components of the system. """
