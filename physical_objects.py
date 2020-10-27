@@ -84,7 +84,7 @@ class Button:
         return None
     
 class Ultrasonic:
-    def __init__(self, trigger = 18, echo = 10, pulse_delay = 0.00001):
+    def __init__(self, trigger = 18, echo = 21, pulse_delay = 0.00001):
         self.trigger = trigger
         self.echo = echo
         self.pulse_delay = pulse_delay
