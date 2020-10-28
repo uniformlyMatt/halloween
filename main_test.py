@@ -18,15 +18,16 @@ for obj in [elevator, button, dispenser, ultrasonic]:
 dist = 100
 
 # The ultrasonic sensor is making some weird measurements, so let it 'warm up'
-for i in range(10):
+for i in range(5):
     dist = ultrasonic.distance()
+    time.sleep(0.2)
 
 try:
     while True:
         dist = ultrasonic.distance()
         
         # When the bag is in the sensor area, move the components
-        if 1 < dist < 5:
+        if 1 < dist < 20:
             # Send the elevator up
             
             elevator.reverse()
