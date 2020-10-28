@@ -8,8 +8,9 @@ gpio.setmode(gpio.BCM)
 # Initialize the physical objects in the system 
 elevator = ph.Stepper(pulse = 13, direction = 19, enable = 26, steps = 54000, name = 'Elevator')
 button = ph.Button(pin = 14)
-dispenser = ph.Stepper(pulse = 17, direction = 27, enable = 22, steps = 800, name = 'Dispenser')
-ultrasonic = ph.Ultrasonic(trigger = 18, echo = 21, pulse_delay = 0.00001)
+dispenser = ph.Stepper(pulse = 17, direction = 27, enable = 22, steps = 2000, name = 'Dispenser')
+ultrasonic = ph.Ultrasonic(trigger = 18, echo = 21, pulse_delay = 0.00001, green_led = 5, red_led = 6)
+red_led = ph.LED(pin = 5, delay = 5)
 
 # Show that each physical object is initialized
 for obj in [elevator, button, dispenser, ultrasonic]:
@@ -28,8 +29,10 @@ try:
         
         # When the bag is in the sensor area, move the components
         if 1 < dist < 20:
-            # Send the elevator up
+            # Turn on the red led
+            ultrasonic.red()
             
+            # Send the elevator up
             elevator.reverse()
             ph.thread_it(elevator)
             

@@ -100,10 +100,12 @@ class Button:
         return None
     
 class Ultrasonic:
-    def __init__(self, trigger = 18, echo = 21, pulse_delay = 0.00001):
+    def __init__(self, trigger = 18, echo = 21, pulse_delay = 0.00001, green_led = 5, red_led = 5):
         self.trigger = trigger
         self.echo = echo
         self.pulse_delay = pulse_delay
+        self.green_led = LED(pin = green_led, blinks = 10)
+        self.red_led = LED(pin = red_led, blinks = 10)
         self.pins = [trigger, echo, pulse_delay]
         
         # Physical pin setup
@@ -113,8 +115,17 @@ class Ultrasonic:
     def __str__(self):
         return 'Ultrasonic sensor object on pins {}'.format(self.pins)
     
+    def red(self):
+        """ Turn on the red led """
+        self.green_led.off()
+        self.red_led.on()
+    
     def distance(self):
         """ Use the ultrasonic sensor to get a distance measurement """
+        
+        # Turn on the green led as long as we're getting distances
+        self.red_led.off()
+        self.green_led.on()
         
         # Send out a pulse for 0.00001 s
         gpio.output(self.trigger, 1)
@@ -142,6 +153,8 @@ class Ultrasonic:
 class LED:
     def __init__(self, pin = 5, blinks = 10):
         self.pin = pin
+        self.blinks = blinks
+        self.power = False
         
         # Physical pin setup
         gpio.setup(self.pin, gpio.OUT)
@@ -154,6 +167,7 @@ class LED:
         """ Simply turn the LED on """
         
         gpio.output(self.pin, 1)
+        self.power = True
         
         return None
     
@@ -161,24 +175,25 @@ class LED:
         """ Simply turn the LED off """
         
         gpio.output(self.pin, 0)
+        self.power = False
         
-    def blink(self):
+        return False
+        
+    def run(self):
         """ Make the LED blink a set amount of blinks """
         
         for i in range(self.blinks):
             # Turn the LED on
             self.on()
             
-            time.sleep(0.05)
+            time.sleep(0.2)
             
             # Turn the LED off
             self.off()
+            
+            time.sleep(0.2)
         
         return None
-    
-    def run(self):
-        """ Blink the LED. I had to do it this way to use threading. """
-        pass
     
 def thread_it(obj, timeout = 10):
     """ General function to handle threading for the physical components of the system. """
