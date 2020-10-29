@@ -100,7 +100,7 @@ class Button:
         return None
     
 class Ultrasonic:
-    def __init__(self, trigger = 18, echo = 21, pulse_delay = 0.00001, green_led = 5, red_led = 5):
+    def __init__(self, trigger = 18, echo = 21, pulse_delay = 0.00001, green_led = 16, red_led = 20):
         self.trigger = trigger
         self.echo = echo
         self.pulse_delay = pulse_delay
@@ -115,10 +115,19 @@ class Ultrasonic:
     def __str__(self):
         return 'Ultrasonic sensor object on pins {}'.format(self.pins)
     
+    def green(self):
+        """ Turn on the green led """
+        self.red_led.off()
+        self.green_led.on())
+        
+        return None
+    
     def red(self):
         """ Turn on the red led """
         self.green_led.off()
         self.red_led.on()
+        
+        return None
     
     def distance(self):
         """ Use the ultrasonic sensor to get a distance measurement """
