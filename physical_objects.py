@@ -118,7 +118,7 @@ class Ultrasonic:
     def green(self):
         """ Turn on the green led """
         self.red_led.off()
-        self.green_led.on())
+        self.green_led.on()
         
         return None
     
