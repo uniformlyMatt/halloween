@@ -43,7 +43,7 @@ try:
         dist = ultrasonic.distance()
         
         # Interrupt when the green button is pressed
-        gpio.add_event_detect(green_button.pin, gpio.BOTH, callback = ph.thread_it(dispenser), bouncetime = 50)
+        gpio.add_event_detect(green_button.pin, gpio.BOTH, callback = lambda *a: ph.thread_it(dispenser), bouncetime = 50)
         
         # When the bag is in the sensor area, move the components
         if 1 < dist < 20:
