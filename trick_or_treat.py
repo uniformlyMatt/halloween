@@ -8,7 +8,7 @@ gpio.setmode(gpio.BCM)
 # Initialize the physical objects in the system 
 green_button = ph.Button(pin = 14)
 yellow_button = ph.Button(pin = 26)
-dispenser = ph.Stepper(pulse = 17, direction = 27, enable = 22, steps = 3200, name = 'Dispenser')
+dispenser = ph.Stepper(pulse = 17, direction = 27, enable = 22, steps = 2800, name = 'Dispenser')
 ultrasonic = ph.Ultrasonic(trigger = 18, echo = 21, pulse_delay = 0.00001, green_led = 16, red_led = 20)
 
 # Show that each physical object is initialized
